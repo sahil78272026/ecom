@@ -1,6 +1,9 @@
-{% load static %}  <!--Loading static files in django template-->
+{% extends 'store/main.html' %}
+{% load static %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">  <!--The {% static %} template tag generates the absolute URL of static files-->
+{% block content %}
 <h1>
     Store
 </h1>
+
+{%endblock%}

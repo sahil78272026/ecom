@@ -12,6 +12,31 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css'%}">
+    <script type="text/javascript">
+        var user = '{{request.user}}' // getting user in a variable so that it is available all over the site
+
+        
+        // django doesn't allow request to backend without csrf token
+        // csrf token for post data from fetch API
+        function getToken(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getToken('csrftoken');
+
+
+    </script>
 
 
 </head>
@@ -29,6 +54,7 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'store' %}">Store <span class="sr-only">(current)</span></a>
                 </li>
+        
             </ul>
 
             <div class="form-inline my-2 my-lg-0">
@@ -36,7 +62,7 @@
                 <a href="{% url 'cart' %} ">
                     <img id="cart-icon" src="{% static 'images/cart.png' %}">
                 </a>
-                <p id="cart-total">0</p>
+                <p id="cart-total">{{cartItems}}</p>
 
             </div>
 
@@ -64,6 +90,7 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
 
+    <script type="text/javascript" src="{% static 'js/cart.js'%}"></script>
 </body>
 
 </html>

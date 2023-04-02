@@ -130,4 +130,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #setting up static files
 STATICFILES_DIRS=[os.path.join(BASE_DIR,'static')]
 
+# render images with url, also set the configuration in urls.py
+MEDIA_URL = '/images/'
+
+# this will add media in static/images folder as soon as any image is being uploaded
+MEDIA_ROOT=os.path.join(BASE_DIR,'static/images')
 

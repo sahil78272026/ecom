@@ -33,7 +33,44 @@
             }
             return cookieValue;
         }
-        const csrftoken = getToken('csrftoken');
+        var csrftoken = getToken('csrftoken');
+        
+        function getCookie(name){
+            console.log('Passed Value:',name)
+            // split the cookie string and get all individual name=value pair in an array
+            var cookieArr = document.cookie.split(";");
+            console.log('Cookie Arr:',cookieArr)
+
+            // loop through array element
+            for(var i=0;i<cookieArr.lenght;i++){
+                var cookiePair=cookieArr[i].split("=");
+                console.log('Cookie Pair:',cookiePair)
+
+                // removing whitespaces at the beginning of the cookie name
+                // and compare it with the given string
+
+                if(name==cookiePair[0].trim()){
+                    // decode the cookie value and return
+                    return decodeURIComponent(cookiePair[1])
+                }
+            }
+            // return null if not found
+            return null;
+
+        }
+
+        var cart = JSON.parse(getCookie('cart'))
+        
+
+        // null or undefined both will work
+        if(cart == undefined){
+            cart={}
+            console.log("cart was created")
+            // setting the cookie in main domain and path
+            document.cookie = 'cart='+JSON.stringify(cart)+";domain=;path=/"
+        }
+        console.log('Cart: ', cart)
+
 
 
     </script>

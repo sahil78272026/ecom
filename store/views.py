@@ -2,22 +2,13 @@ from django.shortcuts import render
 from .models import *
 from django.http import JsonResponse
 import json
+import datetime
+from .utils import cookieCart, cartData, guestOrder
 
 # Create your views here.
 def store(request):
-
-    if request.user.is_authenticated:
-        customer= request.user.customer # taking details of child items, user.customer
-        order,created=Order.objects.get_or_create(customer=customer,complete=False) # fetching orders of related customer
-        items = order.orderitem_set.all() # fetching all items
-        cartItems = order.get_cart_items
-    else: # for not logged in user
-        items=[]     
-        order={'get_cart_total':0,'get_cart_items':0,'shipping':False}
-        cartItems = order['get_cart_items']
-
-    print("Clicked on store...")
-    print("Getting all Product details from Store....")
+    data = cartData(request) # see utills.py
+    cartItems = data['cartItems'] 
     products = Product.objects.all()
     context={'products': products,'cartItems':cartItems}
 
@@ -28,32 +19,22 @@ def store(request):
 
 def cart(request):
 
-    if request.user.is_authenticated:
-        customer= request.user.customer # taking details of child items, user.customer
-        order,created=Order.objects.get_or_create(customer=customer,complete=False) # fetching orders of related customer
-        items = order.orderitem_set.all() # fetching all items
-        cartItems = order.get_cart_items
-   
-    else: # for not logged in user
-        items=[]     
-        order={'get_cart_total':0,'get_cart_items':0,'shipping':False}
-        cartItems = order['get_cart_items']
+    data = cartData(request) # see utills.py
+    items = data['items']
+    order = data['order']
+    cartItems = data['cartItems']
 
     
     context={'items':items,'order':order,'cartItems':cartItems}
     return render(request,'store/cart.html',context)
 
+#from django.views.decorators.csrf import csrf_exempt # csrf token required for any request to backend, being done to exempt the csrf token
+#@csrf_exempt
 def checkout(request):
-    if request.user.is_authenticated:
-        customer= request.user.customer
-        order,created=Order.objects.get_or_create(customer=customer,complete=False)
-        items = order.orderitem_set.all()
-        cartItems = order.get_cart_items
-     
-    else: # for not logged in user
-        items=[]     
-        order={'get_cart_total':0,'get_cart_items':0,'shipping':False}
-        cartItems = order['get_cart_items']
+    data = cartData(request) # see utills.py
+    items = data['items']
+    order = data['order']
+    cartItems = data['cartItems']
 
     context={'items':items,'order':order,'cartItems':cartItems}
     return render(request,'store/checkout.html',context)
@@ -84,3 +65,36 @@ def updateItem(request):
 
 
     return JsonResponse("Item was added", safe=False) # safe=False, if we don't want to confirm anything
+
+# from django.views.decorators.csrf import csrf_exempt # csrf token required for any request to backend, being done to exempt the csrf token
+# @csrf_exempt
+def processOrder(request):
+    transaction_id = datetime.datetime.now().timestamp()
+    data = json.loads(request.body)
+
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order,created=Order.objects.get_or_create(customer=customer,complete=False) # getting order that is attacehd to customer
+
+    else: # guest user
+        customer,order = guestOrder(request,data) # see utils.py
+        
+    
+    total = float(data['form']['total'])
+    order.transaction_id = transaction_id
+
+    if total == order.get_cart_total:
+        order.complete = True
+    order.save()
+
+    if order.shipping==True:
+        ShippingAddress.objects.create(
+            customer=customer,
+            order=order,
+            address=data['shipping']['address'],
+            city=data['shipping']['city'],
+            state=data['shipping']['state'],
+            zipcode=data['shipping']['zipcode']
+        )
+
+    return JsonResponse("Payment was completed", safe=False)

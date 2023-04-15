@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +28,7 @@ SECRET_KEY = 'django-insecure-o#*3wc)1)c!@h9@r0-e46^09y*&y2=la0r==fnse*nf^z6p0ro
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -79,7 +81,7 @@ WSGI_APPLICATION = 'ecom.wsgi.application'
 DATABASES = {
     'default': {
        
-       #New Manual setting for local postgresql , put these values below 'NAME' variable in databases and comment out 'ENGINE' and 'NAME'
+    #3 New Manual setting for remove postgresql (railway) , put these values below 'NAME' variable in databases and comment out 'ENGINE' and 'NAME'
         'ENGINE': 'django.db.backends.postgresql',
         'URL':'postgresql://postgres:FqqB4CTSpdQqQNJ3AFFU@containers-us-west-8.railway.app:6235/railway',
         'NAME': 'railway',
@@ -87,19 +89,14 @@ DATABASES = {
         'PASSWORD': 'FqqB4CTSpdQqQNJ3AFFU',
         'HOST': 'containers-us-west-8.railway.app',
         'PORT': '6235', 
-
-   
-
     }
-
-    
 }
-"""  # default django setting
+"""  #1 default django setting
        'ENGINE': 'django.db.backends.sqlite3',  
        'NAME': BASE_DIR / 'db.sqlite3',
 
 
-       #New Manual setting for local postgresql , put these values below 'NAME' variable in databases and comment out 'ENGINE' and 'NAME'
+     #2 New Manual setting for local postgresql , put these values below 'NAME' variable in databases and comment out 'ENGINE' and 'NAME'
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'test',
         'USER': 'postgres',
@@ -108,6 +105,9 @@ DATABASES = {
         'PORT': '5432', 
 """
 
+
+#Manual for vercel deployment
+DATABASES['default'] = dj_database_url.config()
 
 
 # Password validation
@@ -162,3 +162,5 @@ MEDIA_URL = '/images/'
 # this will add media in static/images folder as soon as any image is being uploaded
 MEDIA_ROOT=os.path.join(BASE_DIR,'static/images')
 
+# vercel
+STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"

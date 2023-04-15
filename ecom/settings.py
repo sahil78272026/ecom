@@ -78,10 +78,36 @@ WSGI_APPLICATION = 'ecom.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+       
+       #New Manual setting for local postgresql , put these values below 'NAME' variable in databases and comment out 'ENGINE' and 'NAME'
+        'ENGINE': 'django.db.backends.postgresql',
+        'URL':'postgresql://postgres:FqqB4CTSpdQqQNJ3AFFU@containers-us-west-8.railway.app:6235/railway',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'FqqB4CTSpdQqQNJ3AFFU',
+        'HOST': 'containers-us-west-8.railway.app',
+        'PORT': '6235', 
+
+   
+
     }
+
+    
 }
+"""  # default django setting
+       'ENGINE': 'django.db.backends.sqlite3',  
+       'NAME': BASE_DIR / 'db.sqlite3',
+
+
+       #New Manual setting for local postgresql , put these values below 'NAME' variable in databases and comment out 'ENGINE' and 'NAME'
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'test',
+        'USER': 'postgres',
+        'PASSWORD': 'ZAQ!zaq1',
+        'HOST': 'localhost',
+        'PORT': '5432', 
+"""
+
 
 
 # Password validation

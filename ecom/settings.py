@@ -155,6 +155,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #setting up static files
 
+
 # render images with url, also set the configuration in urls.py
 MEDIA_URL = '/images/'
 
@@ -163,4 +164,3 @@ MEDIA_ROOT=os.path.join(BASE_DIR,'static/images')
 
 # vercel
 STATIC_ROOT = BASE_DIR / "static"
-    

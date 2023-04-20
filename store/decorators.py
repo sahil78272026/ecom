@@ -6,7 +6,7 @@ def unauthenticatedUser(view_func):
     # restricting logged in user to see loginpage again through decorator
     def wrapper_func_unauth(request, *args, **kwargs):
         if request.user.is_authenticated:
-         return redirect('home')
+         return redirect('store')
         else:
           return view_func(request, *args, **kwargs)
     return wrapper_func_unauth

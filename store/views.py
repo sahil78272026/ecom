@@ -1,9 +1,65 @@
+#default
 from django.shortcuts import render
-from .models import *
+from django.shortcuts import render,redirect
 from django.http import JsonResponse
 import json
 import datetime
+from django.contrib.auth.models import Group 
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
+
+#Custom
+from .models import *
 from .utils import cookieCart, cartData, guestOrder
+from .forms import OrderForm,CreateUserForm,CustomerForm
+from .decorators import unauthenticatedUser,allowed_users,admin_only
+
+@csrf_exempt
+@unauthenticatedUser # # restricting logged in user to see loginpage again through decorator
+def registerPage(request):
+        form = CreateUserForm()
+        if request.method=='POST':
+            form = CreateUserForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+                 # attaching default group as customer for new user
+               #  group = Group.objects.get(name = 'customer')
+               #  user.groups.add(group)
+                username = form.cleaned_data.get('username')
+                Customer.objects.create(
+                    user=user,
+                    name = user.username,
+                )
+                messages.success(request," Account Created for " + username)
+                return redirect('login')
+                
+        
+        context = {'form':form}
+
+        
+        return render(request,'store/register.html',context)
+
+@unauthenticatedUser # # restricting logged in user to see loginpage again through decorator
+def loginPage(request):
+        if request.method == 'POST':
+                username= request.POST.get('username')
+                password= request.POST.get('password')
+                user = authenticate(request,username=username,password=password)
+
+                if user is not None:
+                    login(request, user)
+                    return redirect('store')
+                else:
+                    messages.info(request, 'Username OR Password is incorrect')
+                    
+        context = {}
+        return render(request,'store/login.html',context)
+
+
+def logoutUser(request):
+    logout(request)
+    return redirect('login')
 
 # Create your views here.
 def store(request):

@@ -122,8 +122,8 @@ def updateItem(request):
 
     return JsonResponse("Item was added", safe=False) # safe=False, if we don't want to confirm anything
 
-# from django.views.decorators.csrf import csrf_exempt # csrf token required for any request to backend, being done to exempt the csrf token
-# @csrf_exempt
+from django.views.decorators.csrf import csrf_exempt # csrf token required for any request to backend, being done to exempt the csrf token
+@csrf_exempt
 def processOrder(request):
     transaction_id = datetime.datetime.now().timestamp()
     data = json.loads(request.body)
